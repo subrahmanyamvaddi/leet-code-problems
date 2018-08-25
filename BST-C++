@@ -1,0 +1,101 @@
+
+//Binary Search Tree
+struct bstNode{
+    int val;
+    bstNode* left,*right;
+};
+
+bstNode* makebstNode(int data){
+    bstNode* newNode = new bstNode();
+    newNode->val = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+//insert into a binary search tree
+bstNode* insertbstNode(bstNode* tree, int data){
+    if(tree == NULL){
+        tree = makebstNode(data);
+        return tree;
+    }
+    bstNode* p = makebstNode(data);
+    if(tree->val < data)
+        tree->right = insertbstNode(tree->right,data);
+    else
+        tree->left = insertbstNode(tree->left,data);
+    return tree;
+}
+
+void printinorderBST(bstNode* tree){
+    if(tree!= NULL){
+        printinorderBST(tree->left);
+        cout<< tree->val << " ";
+        printinorderBST(tree->right);
+    }
+}
+
+//Search a key in BST
+bstNode* searchKey(bstNode* tree, int key){
+    if(tree== NULL)
+        return NULL;
+    if(tree->val < key)
+        return searchKey(tree->right,key);
+    else if(tree->val == key)
+        return tree;
+    else
+        return searchKey(tree->left,key);
+}
+
+//delete a node in bstNode 
+bstNode* deletebstNode(bstNode* tree, int key){
+    if(tree == NULL)
+        return tree;
+    if(tree->val < key)
+        tree->right = deletebstNode(tree->right,key);
+    else if(tree->val > key)
+        tree->left = deletebstNode(tree->left,key);
+    else{
+        if(tree->left == NULL && tree->right == NULL)
+            {
+                delete(tree);
+                return NULL;
+            }
+        if(tree->left == NULL){
+            bstNode* temp = tree->right;
+            delete(tree);
+            return temp;
+        }
+        if(tree->right == NULL){
+            bstNode* temp = tree->left;
+            delete(tree);
+            return temp;
+        }
+        bstNode* temp = tree->right;
+        while(temp->left != NULL)
+            temp = temp->left;
+        tree->val = temp->val;
+        tree->right = deletebstNode(tree->right,temp->val);
+        return tree;
+    }
+}
+
+int main() {
+	bstNode* tree = insertbstNode(NULL,50);
+	tree = insertbstNode(tree,30);
+	tree = insertbstNode(tree,20);
+	tree = insertbstNode(tree,40);
+	tree = insertbstNode(tree,70);
+	tree = insertbstNode(tree,60);
+	tree = insertbstNode(tree,80);
+	printinorderBST(tree);
+	if(searchKey(tree,10) == NULL){
+	    cout << "No key found"<<endl;
+	}
+	else
+	    cout<< "Key found" << endl;
+	    
+	tree = deletebstNode(tree,50);
+	cout << "**" <<endl;
+	printinorderBST(tree);
+	return 0;
+}

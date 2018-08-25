@@ -1,0 +1,175 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+struct Node{
+    int val;
+    struct Node* left, *right;
+};
+
+Node* makeNode(int data){
+    Node* newNode = (Node*)malloc(sizeof(struct Node));
+    newNode->val = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+//inserts in level order
+Node* insertLevelOrder(Node* tree, int data){
+    Node* node = makeNode(data);
+    if(tree == NULL){
+        tree= node;
+        return tree;
+    }
+    queue<Node*> q;
+    q.push(tree);
+    while(!q.empty()){
+        
+        Node* p = q.front();
+        q.pop();
+        if(p->left == NULL){
+            p->left = node;
+            return tree;
+        }
+        else
+            q.push(p->left);
+        
+        if(p->right == NULL){
+            p->right = node;
+            return tree;
+        }
+        else
+            q.push(p->right);
+    }
+    return tree;
+}
+
+//prints levelorder traversal of tree
+void printTree(Node* tree){
+    if(tree == NULL)
+        return;
+    queue<Node*> q;
+    q.push(tree);
+    while(!q.empty()){
+        Node* p = q.front();
+        q.pop();
+        cout<<p->val<<" ";
+        if(p->left != NULL){
+            q.push(p->left);
+        }
+        if(p->right != NULL){
+            q.push(p->right);
+        }
+    }
+    cout << endl;
+    return;
+}
+
+void deletelastNode(Node* tree,int data){
+    if(tree == NULL)
+        return;
+    if(tree->val == data)
+        {
+            tree= NULL;
+            return;
+        }
+    queue<Node*> q;
+    q.push(tree);
+    while(!q.empty()){
+        Node*p = q.front();
+        q.pop();
+        if(p->left != NULL){
+            if(p->left->val == data){
+                Node* temp = p->left;
+                p->left = NULL;
+                free(temp);
+                return;
+            }
+            else
+                q.push(p->left);
+        }
+        if(p->right != NULL){
+            if(p->right->val == data){
+                Node* temp = p->right;
+                p->right = NULL;
+                free(temp);
+                return;
+            }
+            else
+                q.push(p->right);
+        }
+    }
+    return;
+    
+}
+
+void swapNodes(Node* tree,Node* nodeTobeDeleted){
+    if(tree == NULL)
+        return ;
+    queue<Node*> q;
+    q.push(tree);
+    while(!q.empty()){
+        Node* p = q.front();
+        q.pop();
+        
+        if(p->left == NULL && p->right == NULL){
+            int temp = p->val;
+            p->val = nodeTobeDeleted->val;
+            nodeTobeDeleted->val = temp;
+            return;
+        }
+        if(p->right != NULL)
+            q.push(p->right); 
+        if(p->left != NULL)
+            q.push(p->left);
+          
+    }
+    return;
+}
+
+Node* findNode(Node* tree, int data){
+    if(tree == NULL)
+        return NULL;
+    if(tree->val == data)
+        return tree;
+    if(tree->left != NULL){
+        Node* p = findNode(tree->left,data);
+        if(p!= NULL)
+            return p;
+    }
+    if(tree->right != NULL){
+        Node* p = findNode(tree->right,data);
+        if(p != NULL)
+            return p;
+    }
+    return NULL;
+}
+
+//delete a node with given key by first replacing it with the bottom right most node
+// and then deleting that Node
+void deleteNode(Node* tree,int data){
+    Node* nodeTobeDeleted = findNode(tree,data);
+    if(nodeTobeDeleted != NULL){
+        swapNodes(tree,nodeTobeDeleted);
+        deletelastNode(tree,data);
+    }
+    else
+        cout<<"Node value not found!"<<endl;
+}
+
+int main() {
+	Node* tree = insertLevelOrder(NULL,10);
+	tree = insertLevelOrder(tree,11);
+	tree = insertLevelOrder(tree,12);
+	tree = insertLevelOrder(tree,13);
+	tree = insertLevelOrder(tree,14);
+	tree = insertLevelOrder(tree,15);
+	tree = insertLevelOrder(tree,16);
+	printTree(tree);
+	deleteNode(tree,12);
+	printTree(tree);
+	deleteNode(tree,10);
+	printTree(tree);
+	return 0;
+}
